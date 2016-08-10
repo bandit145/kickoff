@@ -3,6 +3,8 @@ import paramiko
 import configparser
 import argparse
 import sys
+import getpass
+import os
 parser = argparse.ArgumentParser()
 parser.add_argument('-l', '--list', usage= 'list balls', action = 'store_true')
 pasrer.add_argument('-b', '--ball', usage= 'ball you want to use', required=True)
@@ -71,15 +73,27 @@ def runner(trigger):
 	steps = sort_balls
 	if trigger == 'group':
 		group = inv.options(args.group)
-		for machine in group:
-			if config.get(args.ball, 'tag') == windows: #This prograsm need to be "classified"
-				winrm_connect
+		if tag_check() == 'windows'
+			for machine in group:
+				winrm_connect(machine, steps)
 
-			elif conifg.get(args.ball, 'tag') == linux:
-
-def winrm_connect():
-	if 
-	session = winrm.Session()
+def winrm_connect(machine, steps):
+	count = 0
+	user = input('Enter username [>] ')
+	passwrd = getpass.getpass('Enter password [>] ')
+	session = winrm.Session(machine, auth=(user, passwrd))
+	for step in steps:
+		count = count +1 
+		execute = session.run_cmd(step)
+		if count == 1:
+			print(execute.std_out)
+		#add logging through execute.std_out
+		if execute.std_err is not None:
+			print('----------------------------')
+			print(execute.std_err)
+			sys.exit()
+	print('[>] Success!')
+	print('[>] Log saved')
 
 
 def ssh_connect():
@@ -90,6 +104,17 @@ def sort_balls():
 	options.remove('description')
 	options.remove('tag')
 	for option in options:
-		steps.append(config.get(args.ball, option))
+		steps.append(config.get(args.ball, option)) #for each command
 	return steps
 
+def tag_check():
+	if config.get(args.ball, 'tag') == 'windows':
+		return 'windows'
+	elif config.get(args.ball, 'tag') == 'linux'
+		return 'linux'
+
+def generate_log():
+	directory = os.listdir()
+
+	with open('log'+len(directory)+1,'w') as log:
+		
