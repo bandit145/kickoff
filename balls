@@ -1,6 +1,6 @@
 ;kickoff sections
 [server_setup]
-tag=bash 
+tag=linux 
 description=
 1=sudo apt-get install python3-dev
 2=sudo apt-get install thingy
