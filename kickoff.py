@@ -1,5 +1,5 @@
 
-#TODO: ssh func tomorrow, write unit tests and add exception handling 8/10/2016
+#TODO: make move to classes to accomodate larger program
 import winrm #to be used for powershell/windows commands
 import paramiko
 import configparser
@@ -24,10 +24,10 @@ args = parser.parse_args()
 #
 def check_ball(): #checks to make sure specified ball is in balls file
 	if args.ball is None:
-		print('[>] You must select a ball')
+		print('[>] You must select a ball...')
 		sys.exit()
 	if args.ball not in config.sections():
-		print('[>] specifed ball not in the ball file')
+		print('[>] specifed ball not in the ball file...')
 		sys.exit()
 
 def list_balls_help():
@@ -46,13 +46,13 @@ def input_error_check():
 		runner(group)
 
 	elif args.machine is None and args.group is None:
-		print('[>] You must enter a group or machine to run ball against')
+		print('[>] You must enter a group or machine to run ball against...')
 		parser.usage()
 	elif args.machine is not None and args.group is not None:
-		print('[>] You cannot use both tags')
+		print('[>] You cannot use both tags...')
 		parser.usage()
 	else:
-		print('[>] Unspecified behavior')
+		print('[>] Unspecified behavior...')
 
 def start():
 	#kicks off program
@@ -111,8 +111,8 @@ def ssh_connect(machine, steps, count):
 		client = paramiko.client.SSHClient()
 		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		if args.key is None:
-			print('[>] No key selected for ssh')
-			print('[>] Switching to password auth')
+			print('[>] No key selected for ssh...')
+			print('[>] Switching to password auth...')
 			user = input('[>] Enter Username: ')
 			psswd = getpass.getpass('[>] Enter Password: ')
 			client.connect(machine, username=user, password= psswd)
@@ -122,14 +122,14 @@ def ssh_connect(machine, steps, count):
 		for step in steps:
 			stdin,stdout, stderr = client.exec_command(step)
 			if count == 1:
-				print(stdout)
+				print(stdout.read())
 			if stderr is not None: #this probably will get changed to len or something
 				print('[>]--------------------------------[<]')
-				print(std_err)
+				print(std_err.read())
 				sys.exit()
 		generate_log(stdout, stderr)
 		print('[>] Success!')
-		print('[>] Log Saved')
+		print('[>] Log Saved...')
 	except paramiko.ssh_exception.AuthenticationException:
 		print('[>] Login creds incorrect')
 		sys.exit()
@@ -158,9 +158,9 @@ def generate_log(stdout, stderr):
 
 	with open('log'+len(directory)+1,'w') as log:
 		if stderr is not None:
-			log.write(stderr)
+			log.write(stderr.read())
 		log.write('\n')
-		log.write(stdout)
+		log.write(stdout.read())
 
 start()
 	

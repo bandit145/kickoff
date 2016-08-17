@@ -2,9 +2,7 @@
 [server_setup]
 tag=linux 
 description=
-1=sudo apt-get install python3-dev
-2=sudo apt-get install thingy
-3=python3 program.py
+1=echo "hello"
 
 [win_setup]
 tag=powershell
