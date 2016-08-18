@@ -8,6 +8,8 @@ import sys
 import getpass
 import os
 import socket #for error handling connections
+from connection.py import *
+from parsing.py import *
 parser = argparse.ArgumentParser()
 parser.add_argument('-l', '--list', action = 'store_true')
 parser.add_argument('-b', '--ball', help= 'Ball to run')
