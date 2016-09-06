@@ -8,7 +8,8 @@ import os
 #TODO: Add generate log ot this file instead of parsing
 class connections:
 	def __init__(self, group, steps, count, args):
-		self.group = group
+		self.group = []  #might need redoing when groups get parsed from inventory
+		self.group.append(group)
 		self.steps = steps
 		self.count = count
 		self.args = args
@@ -29,15 +30,17 @@ class connections:
 					client.connect(machine, pkey=self.args.key)
 
 				for step in self.steps:
-					stdin,stdout, stderr = client.exec_command(step)
+					stdin, stdout, stderr = client.exec_command(step)
 					if self.count == 1:
+						stdout = str(stdout.read()) #might change to readlines depending
+						stderr = str(stderr.read())
 						print(stdout)
-					if stderr is not None: #this probably will get changed to len or something
+					if len(stderr) > 5: #this probably will get changed to len or something
 						print('[>]--------------------------------[<]')
-						print(std_err)
+						print(stderr)
 						sys.exit()
+					self.generate_log(stdout, stderr)
 				self.count =+1
-				self.generate_log(stdout, stderr)
 			print('[>] Success!')
 			print('[>] Log Saved')
 		except paramiko.ssh_exception.AuthenticationException:
@@ -66,7 +69,7 @@ class connections:
 						print('[>]--------------------------------[<]')
 						print(execute.std_err)
 						sys.exit()
-				self.generate_log(execute.stdout, execute.stderr)
+					self.generate_log(execute.stdout, execute.stderr)
 				print('[>] Success!')
 				print('[>] Log saved')
 				self.count =+1
@@ -76,11 +79,11 @@ class connections:
 			print('[>] Network error. Is the machine address correct?')
 			sys.exit()
 
-	def generate_log(stdout, stderr):
+	def generate_log(self,stdout, stderr):
 		directory = os.listdir()
 
-		with open('log'+len(directory)+1,'w') as log:
-			if stderr is not None:
+		with open('log','w') as log:
+			if len(stderr) > 5:
 				log.write(stderr)
 			log.write('\n')
 			log.write(stdout)
