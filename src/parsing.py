@@ -22,6 +22,13 @@ class ballhandling:
 		for option in options:
 			steps.append(self.config.get(self.args.ball, option)) #for each command
 		return steps
+
+	def remote_user(self):
+		try:
+			remote_user = self.config.get(self.args.ball, 'remote_user')
+			return remote_user
+		except configparser.NoOptionError:
+			print('[>] Ball needs a remote user')
 		
 	def tag_check(self):
 		if self.config.get(self.args.ball, 'tag') == 'windows':

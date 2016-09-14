@@ -1,8 +1,11 @@
 ;kickoff sections
 [server_setup]
+remote_user=phil
 tag=linux 
 description=ehcos
 1=echo hello
+
+
 [win_setup]
 tag=powershell
 description=
