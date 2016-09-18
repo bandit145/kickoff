@@ -1,9 +1,10 @@
 ;kickoff sections
 [server_setup]
-remote_user=phil
+remote_user=pi
 tag=linux 
 description=ehcos
-1=echo hello
+1=DEBIAN_FRONTEND=noninteractive apt-get install  python3-dev
+2=echo wat
 
 
 [win_setup]

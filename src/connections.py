@@ -6,7 +6,8 @@ import socket
 import os
 from src.parsing import *
 #from src.parsing import ballhandling
-#TODO: Add generate log ot this file instead of parsing
+#TODO: generate log from compiled list of output not from singular output
+#TODO:  
 class connections:
 	def __init__(self, group, steps, count, args, remote_user):
 		if group == list:
@@ -32,19 +33,19 @@ class connections:
 				for step in self.steps:
 
 					if self.count == 1:
-						stdout, stderr = sudo_run(sudo, step)
-						outlines = str(stdout.readlines()) #might change to readlines depending
-						error = str(stderr.readlines())
-						for out in stdout:
-							print(out)
+						sudo = sudo + 1
+						stdout, stderr = self.sudo_run(sudo, step, client)
+						outlines = str(stdout.read()) 
+						error = str(stderr.read())
+						print(outlines)
 					else:
-						stdout, stderr = sudo_run(sudo, step)
-					if len(stderr) > 5: #error should be longer then 5 chars
-						print('[>]--------------------------------[<]')
-						for out in outlines:
-							print(out)
+						stdout, stderr = self.sudo_run(sudo, step, client)
+						error = str(stderr.read())
+					if len(error) > 5: #error should be longer then 5 chars
+						print('[>]---ERROR---ERROR---ERROR---[<]')
+						print(error)
 						sys.exit()
-					self.generate_log(stdout, stderr)
+					self.generate_log(outlines, error) # need to log output into list and pass to log(only logs one thing now)
 				self.count =+1
 			print('[>] Success!')
 			print('[>] Log Saved')
@@ -94,12 +95,14 @@ class connections:
 			log.write('\n')
 			log.write(stdout)
 
-	def sudo_run(self,sudo,step):
-		if sudo == 1:
+	def sudo_run(self,sudo,step, client):
+		if sudo == 2:
 			stdin, stdout, stderr = client.exec_command('sudo ' + step)
 			stdin.write(self.args.password+'\n')
 			stdin.flush()
+			print('Elevated')
 		else: 
 			stdin, stdout, stderr = client.exec_command(step)
+			print('no sudp')
 		return stdout, stderr
 
