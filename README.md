@@ -34,7 +34,7 @@ Run against a group from the inventory file
 
 
 
-#Configuration Syntax
+#Ball Syntax
 
 [INI](https://en.wikipedia.org/wiki/INI_file#Keys_.28properties.29) Syntax
 
