@@ -2,11 +2,13 @@
 [server_setup]
 remote_user=pi
 tag=linux 
-description=ehcos
+description=ehcos meirl
 1=DEBIAN_FRONTEND=noninteractive apt-get install  python3-dev
 2=echo wat
 
 
 [win_setup]
-tag=powershell
+remote_user=MEME\pbove
+tag=windows
 description=
+1=ipconfig

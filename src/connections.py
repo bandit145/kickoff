@@ -4,6 +4,7 @@ import sys
 import getpass
 import socket
 import os
+import datetime
 from src.parsing import *
 #from src.parsing import ballhandling
 #TODO: generate log from compiled list of output not from singular output
@@ -19,6 +20,7 @@ class connections:
 		self.count = count
 		self.args = args
 		self.remote_user = remote_user
+		self.log = 0
 
 	def ssh_connect(self):
 		try:
@@ -35,15 +37,16 @@ class connections:
 					if self.count == 1:
 						sudo = sudo + 1
 						stdout, stderr = self.sudo_run(sudo, step, client)
-						outlines = str(stdout.read()) 
+						outlines = str(stdout.read())
 						error = str(stderr.read())
 						print(outlines)
 					else:
+						self.log = 1
 						stdout, stderr = self.sudo_run(sudo, step, client)
 						error = str(stderr.read())
 					if len(error) > 5: #error should be longer then 5 chars
 						print('[>]---ERROR---ERROR---ERROR---[<]')
-						print(error)
+						print(error.rstrip())
 						sys.exit()
 					self.generate_log(outlines, error) # need to log output into list and pass to log(only logs one thing now)
 				self.count =+1
@@ -62,8 +65,6 @@ class connections:
 #add socket exception
 #needs to be tested an fixed up
 	def winrm_connect(self):
-		user = input('[>] Enter username: ')
-		passwrd = getpass.getpass('[>] Enter password: ')
 		try:
 			for machine in self.group:
 				session = winrm.Session(machine, auth=(self.remote_user, self.args.password))
@@ -80,7 +81,8 @@ class connections:
 				print('[>] Success!')
 				print('[>] Log saved')
 				self.count =+1
-		except winrm.AuthenticationError: #Auth error
+		except winrm.exceptions.InvalidCredentialsError: #Auth error
+			print('[>] Auth Error')
 			sys.exit()
 		except socket.gaierror:
 			print('[>] Network error. Is the machine address correct?')
@@ -89,20 +91,23 @@ class connections:
 	def generate_log(self,stdout, stderr):
 		directory = os.listdir()
 
-		with open('log','w') as log:
+		with open('log','a') as log:
+			if self.log == 0:
+				log.write(str(datetime.datetime.now()))
+				log.write('\n \n')
+				self.log = 1
 			if len(stderr) > 5:
 				log.write(stderr)
-			log.write('\n')
+			log.write('\n \n')
 			log.write(stdout)
 
 	def sudo_run(self,sudo,step, client):
 		if sudo == 2:
-			stdin, stdout, stderr = client.exec_command('sudo ' + step)
+			stdin, stdout, stderr = client.exec_command('sudo echo')
 			stdin.write(self.args.password+'\n')
 			stdin.flush()
 			print('Elevated')
 		else: 
 			stdin, stdout, stderr = client.exec_command(step)
-			print('no sudp')
 		return stdout, stderr
 

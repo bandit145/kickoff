@@ -1,3 +1,4 @@
+#TODO: Add error handling for people that forgot to enter stuff in the config file
 import configparser
 class ballhandling:
 	def __init__(self, args):

@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3 
 #TODO: ssh func tomorrow, write unit tests and add exception handling 8/10/2016
 import winrm #to be used for powershell/windows commands
 import paramiko
@@ -33,9 +33,11 @@ def start():
 		ball_stuff.list_balls()
 	elif args.ball is None:
 		print('[>] You must select a ball')
+		parser.print_help()
 		sys.exit()
 	elif args.ball not in config.sections():
 		print('[>] specifed ball not in the ball file')
+		parser.print_help()
 		sys.exit()
 	#from here stuff gets dispatched
 	elif args.machine is not None:
