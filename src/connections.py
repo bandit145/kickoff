@@ -16,13 +16,13 @@ class connections:
 		else:
 			self.group = []  #might need redoing when groups get parsed from inventory
 			self.group.append(group) #This wont work with an actual group (probably)
-		self.steps = steps
-		self.count = count
-		self.args = args
-		self.remote_user = remote_user
-		self.log = 0
+		self.steps = steps #For tracking steps
+		self.count = count #for keeping count of how many machines have been run
+		self.args = args #args from cmd line
+		self.remote_user = remote_user #parsed user to use
+		self.log = 0 #for telling the log when to log (might just rip the logging feature out.)
 
-	def ssh_connect(self):
+	def ssh_connect(self): #SSHs into machinesand runs ball
 		try:
 			for machine in self.group:
 				client = paramiko.client.SSHClient()
@@ -62,9 +62,8 @@ class connections:
 			print('[>] Network error. Machine could not access network.')
 			sys.exit()
 
-#add socket exception
-#needs to be tested an fixed up
-	def winrm_connect(self):
+
+	def winrm_connect(self): #winrms into windows machine and runs ball
 		try:
 			for machine in self.group:
 				session = winrm.Session(machine, auth=(self.remote_user, self.args.password))
@@ -88,7 +87,7 @@ class connections:
 			print('[>] Network error. Is the machine address correct?')
 			sys.exit()
 
-	def generate_log(self,stdout, stderr):
+	def generate_log(self,stdout, stderr): #generates the log from a run. Currently only will log 1 full run.
 		directory = os.listdir()
 
 		with open('log','a') as log:
@@ -101,7 +100,7 @@ class connections:
 			log.write('\n \n')
 			log.write(stdout)
 
-	def sudo_run(self,sudo,step, client):
+	def sudo_run(self,sudo,step, client): #elevates to sudo (and normal execution), used in ssh_connect
 		if sudo == 2:
 			stdin, stdout, stderr = client.exec_command('sudo echo')
 			stdin.write(self.args.password+'\n')
