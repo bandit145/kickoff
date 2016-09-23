@@ -41,7 +41,6 @@ class connections:
 						error = str(stderr.read())
 						print(outlines)
 					else:
-						self.log = 1
 						stdout, stderr = self.sudo_run(sudo, step, client)
 						error = str(stderr.read())
 					if len(error) > 5: #error should be longer then 5 chars
