@@ -6,11 +6,13 @@ import socket
 import os
 import datetime
 from src.parsing import *
+from colorama import Back, Style, init
 #from src.parsing import ballhandling
 #TODO: generate log from compiled list of output not from singular output
 #TODO:  
 class connections:
 	def __init__(self, group, steps, count, args, remote_user):
+		init()
 		if group == list:
 			self.group = group
 		else:
@@ -39,14 +41,17 @@ class connections:
 						stdout, stderr = self.sudo_run(sudo, step, client)
 						outlines = stdout.readlines()
 						error = stderr.readlines()
-						for line in outlines:
-							print(line)
+						if len(error) < 5:
+							print(Back.GREEN+''+step+' > PASSED')
+							print(Style.RESET_ALL)
 					else:
 						self.log = 1
+						sudo = sudo +1
 						stdout, stderr = self.sudo_run(sudo, step, client)
 						error = str(stderr.readlines())
 					if len(error) > 5: #rewrite for actual proper output
-						print('[>]---ERROR---ERROR---ERROR---[<]')
+						print(Back.RED+'[>]---ERROR---ERROR---ERROR---[<]')
+						print(Style.RESET_ALL)
 						for line in error:
 							print(line)
 						sys.exit()
@@ -72,11 +77,13 @@ class connections:
 				for step in self.steps:
 					execute = session.run_cmd(step)
 					if self.count == 1:
-						print(execute.std_out)
+						print(Back.GREEN+''+execute.std_out+' > PASSED')
+						print(Style.RESET_ALL)
 					#add logging through execute.std_out
-					if execute.std_err is not None:
-						print('[>]--------------------------------[<]')
-						print(execute.std_err)
+					elif len(execute.stderr) > 5:
+						print(Back.RED+'[>]---ERROR---ERROR---ERROR---[<]')
+						print(Style.RESET_ALL)
+						print(execute.stderr)
 						sys.exit()
 					self.generate_log(execute.stdout, execute.stderr)
 				print('[>] Success!')
@@ -107,7 +114,8 @@ class connections:
 			stdin, stdout, stderr = client.exec_command('sudo echo')
 			stdin.write(self.args.password+'\n')
 			stdin.flush()
-			print('Elevated')
+			print(Back.GREEN +'Elevated')
+			print(Style.RESET_ALL)
 			stdin, stdout, stderr = client.exec_command(step)
 		else: 
 			stdin, stdout, stderr = client.exec_command(step)

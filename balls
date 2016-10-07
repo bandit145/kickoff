@@ -3,7 +3,7 @@
 remote_user=pi
 tag=linux 
 description=ehcos meirl
-1= > hello.txt
+1= > apt-get install python3-dev -y
 2=echo meirl
 3=echo 3
 
