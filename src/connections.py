@@ -30,23 +30,25 @@ class connections:
 				if self.args.key is None:
 					client.connect(machine, username=self.remote_user, password=self.args.password)
 				else:
-					client.connect(machine, username=self.remote_user ,pkey=self.args.key)# add user
-				sudo = 1	
+					key = paramiko.RSAKey(filename=self.args.key, password=self.args.password)
+					client.connect(machine, username=self.remote_user ,pkey=key)# add user
+				sudo = 1
 				for step in self.steps:
-
 					if self.count == 1:
 						sudo = sudo + 1
 						stdout, stderr = self.sudo_run(sudo, step, client)
-						outlines = str(stdout.read())
-						error = str(stderr.read())
-						print(outlines)
+						outlines = stdout.readlines()
+						error = stderr.readlines()
+						for line in outlines:
+							print(line)
 					else:
 						self.log = 1
 						stdout, stderr = self.sudo_run(sudo, step, client)
-						error = str(stderr.read())
-					if len(error) > 5: #error should be longer then 5 chars
+						error = str(stderr.readlines())
+					if len(error) > 5: #rewrite for actual proper output
 						print('[>]---ERROR---ERROR---ERROR---[<]')
-						print(error.rstrip())
+						for line in error:
+							print(line)
 						sys.exit()
 					self.generate_log(outlines, error) # need to log output into list and pass to log(only logs one thing now)
 				self.count =+1
@@ -62,7 +64,7 @@ class connections:
 			print('[>] Network error. Machine could not access network.')
 			sys.exit()
 
-
+	#NEEDS TESTING
 	def winrm_connect(self): #winrms into windows machine and runs ball
 		try:
 			for machine in self.group:
@@ -88,17 +90,17 @@ class connections:
 			sys.exit()
 
 	def generate_log(self,stdout, stderr): #generates the log from a run. Currently only will log 1 full run.
-		directory = os.listdir()
-
 		with open('log','a') as log:
 			if self.log == 0:
 				log.write(str(datetime.datetime.now()))
 				log.write('\n \n')
 				self.log = 1
 			if len(stderr) > 5:
-				log.write(stderr)
-			log.write('\n \n')
-			log.write(stdout)
+				for line in stderr:
+					log.write(line)
+			for line in stdout:
+				log.write('\n \n')
+				log.write(line)
 
 	def sudo_run(self,sudo,step, client): #elevates to sudo (and normal execution), used in ssh_connect
 		if sudo == 2:
@@ -106,6 +108,7 @@ class connections:
 			stdin.write(self.args.password+'\n')
 			stdin.flush()
 			print('Elevated')
+			stdin, stdout, stderr = client.exec_command(step)
 		else: 
 			stdin, stdout, stderr = client.exec_command(step)
 		return stdout, stderr

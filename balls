@@ -3,8 +3,9 @@
 remote_user=pi
 tag=linux 
 description=ehcos meirl
-1=DEBIAN_FRONTEND=noninteractive apt-get install  python3-dev
-2=echo wat
+1= > hello.txt
+2=echo meirl
+3=echo 3
 
 
 [win_setup]

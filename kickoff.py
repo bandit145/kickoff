@@ -1,5 +1,4 @@
 #!/usr/bin/env python3 
-#TODO: ssh func tomorrow, write unit tests and add exception handling 8/10/2016
 import winrm #to be used for powershell/windows commands
 import paramiko
 import configparser
@@ -17,11 +16,6 @@ parser.add_argument('-m','--machine', help= 'Run against individual machine')
 parser.add_argument('-g', '--group', help= 'Run against a group from the inventory file')
 parser.add_argument('-k', '--key', help= 'SSH key to use if needed')
 parser.add_argument('-p', '--password', help= 'password for user elevation/access')
-#QUICK AND DIRTY, USING GLOBALS (NOT BEST PRACTICE, PLS NO KILL)
-
-# TODO: Pass all ball steps to raw string to avoid OSERROR no.2
-#
-
 
 def start():
 	args = parser.parse_args()
