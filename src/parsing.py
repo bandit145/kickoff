@@ -15,12 +15,13 @@ class ballhandling:
 			print('Description: '+ self.config.get(section,'description'))
 
 	def sort_balls(self): #replace with list comprehension
-		steps = [];
 		options = self.config.options(self.args.ball)
 		options.remove('description')
 		options.remove('tag')
 		options.remove('remote_user')
-		steps = [for x in self.config.get(self.args.ball, option)] #for each command
+		steps = [];
+		for option in options:
+			steps.append(self.config.get(self.args.ball, option)) #for each command
 		return steps
 
 	def remote_user(self):
