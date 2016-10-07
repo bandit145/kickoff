@@ -1,4 +1,3 @@
-#TODO: Add error handling for people that forgot to enter stuff in the config file
 import configparser
 class ballhandling:
 	def __init__(self, args):
@@ -21,8 +20,7 @@ class ballhandling:
 		options.remove('description')
 		options.remove('tag')
 		options.remove('remote_user')
-		for option in options:
-			steps.append(self.config.get(self.args.ball, option)) #for each command
+		steps = [for x in self.config.get(self.args.ball, option)] #for each command
 		return steps
 
 	def remote_user(self):
